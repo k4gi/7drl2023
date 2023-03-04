@@ -1,0 +1,36 @@
+[gd_scene load_steps=5 format=3 uid="uid://cnah6qqs38le4"]
+
+[ext_resource type="PackedScene" uid="uid://cbs7jvwr28tsy" path="res://Map.tscn" id="1_gudly"]
+[ext_resource type="Script" path="res://TitleScreen.gd" id="1_l61x1"]
+[ext_resource type="PackedScene" uid="uid://dp2rty8t2fngy" path="res://Character.tscn" id="2_vbn45"]
+
+[sub_resource type="Theme" id="Theme_11vir"]
+default_font_size = 5
+
+[node name="TitleScreen" type="Node2D"]
+script = ExtResource("1_l61x1")
+
+[node name="Map" parent="." instance=ExtResource("1_gudly")]
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+theme = SubResource("Theme_11vir")
+
+[node name="Label" type="Label" parent="Control"]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 6.0
+offset_right = 96.0
+offset_bottom = 25.0
+text = "          offset title screen of beginnings"
+
+[node name="Character" parent="." instance=ExtResource("2_vbn45")]
+offset_left = 18.0
+offset_top = 18.0
+offset_right = 18.0
+offset_bottom = 18.0
+
+[connection signal="attempt_move_to" from="Character" to="." method="_on_character_attempt_move_to"]
