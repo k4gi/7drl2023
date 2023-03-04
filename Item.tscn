@@ -1,13 +1,14 @@
-[gd_scene load_steps=2 format=3 uid="uid://dp2rty8t2fngy"]
+[gd_scene load_steps=2 format=3 uid="uid://4mfbfwmnbq5e"]
 
-[ext_resource type="Script" path="res://Character.gd" id="1_blfnp"]
+[ext_resource type="Script" path="res://Item.gd" id="1_ar6lk"]
 
-[node name="Character" type="Control"]
+[node name="Item" type="Control"]
 layout_mode = 3
 anchors_preset = 0
-script = ExtResource("1_blfnp")
+script = ExtResource("1_ar6lk")
 
 [node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 0
 offset_left = -3.0
 offset_top = -3.0
 offset_right = 3.0
@@ -21,5 +22,5 @@ offset_top = -3.0
 offset_right = 3.0
 offset_bottom = 7.0
 theme_override_font_sizes/font_size = 5
-text = "@"
+text = "$"
 clip_text = true

@@ -14,3 +14,7 @@ const WALLS = [VERTICAL_BAR, HYPHEN]
 func is_wall_at(pos: Vector2):
 	var grid_pos = local_to_map(pos)
 	return WALLS.has( get_cell_atlas_coords(0, grid_pos) )
+
+
+func is_wall_at_grid(grid_pos: Vector2i):
+	return WALLS.has( get_cell_atlas_coords(0, grid_pos) )
