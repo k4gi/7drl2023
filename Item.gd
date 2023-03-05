@@ -1,4 +1,4 @@
 extends Control
 
 
-var item_id = 0
+var item_id = "money"

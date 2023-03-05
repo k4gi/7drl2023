@@ -2,6 +2,11 @@ extends Control
 
 
 signal attempt_move_to(pos: Vector2)
+signal attempt_action_at(pos: Vector2)
+
+
+const FOREGROUND_COLOUR = Color.WHITE
+const BACKGROUND_COLOUR = Color.BLACK
 
 
 var is_active = true
@@ -36,7 +41,20 @@ func _unhandled_input(event):
 		elif event.is_action_pressed("move_wait"):
 			is_active = false
 			emit_signal( "attempt_move_to", get_position() )
+		elif event.is_action_pressed("move_action"):
+			is_active = false
+			emit_signal( "attempt_action_at", get_position() )
 
 
 func move_to(pos: Vector2):
 	set_position(pos)
+
+
+func set_colour_normal():
+	$ColorRect.set_color(BACKGROUND_COLOUR)
+	$Label.set_modulate(FOREGROUND_COLOUR)
+
+
+func set_colour_invert():
+	$ColorRect.set_color(FOREGROUND_COLOUR)
+	$Label.set_modulate(BACKGROUND_COLOUR)
