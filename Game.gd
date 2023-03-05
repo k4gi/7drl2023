@@ -5,8 +5,10 @@ var pathfinding
 
 
 func _ready():
+	$Map.cellular_automata_generation()
+	
 	pathfinding = AStarGrid2D.new()
-	pathfinding.set_size( Vector2i(80,24) )
+	pathfinding.set_size( $Map.SIZE )
 	pathfinding.update()
 	for each_grid_pos in $Map.get_used_cells(0):
 		if $Map.is_wall_at_grid( each_grid_pos ):
