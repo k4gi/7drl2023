@@ -14,6 +14,7 @@ const SOLID_SQUARE = Vector2i(7,15)
 const LIGHT_GRID = Vector2i(8,15)
 const HEAVY_GRID = Vector2i(9,15)
 const HOLLOW_SQUARE = Vector2i(11,15)
+const EMPTY_SPACE = Vector2i(0,0)
 
 #which of these tiles are walls?
 const WALLS = [VERTICAL_BAR, HYPHEN, FORWARD_SLASH, BACK_SLASH, SOLID_SQUARE]
@@ -41,7 +42,7 @@ func cellular_automata_generation():
 	for x in SIZE.x:
 		generations[current_generation].append( [] )
 		for y in SIZE.y:
-			if randi() % 100 < 50: 
+			if random.randi() % 100 < 50: 
 				generations[current_generation][x].append( Vector2i.ZERO )
 			else:
 				generations[current_generation][x].append( SOLID_SQUARE )

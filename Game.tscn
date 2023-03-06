@@ -1,11 +1,8 @@
-[gd_scene load_steps=8 format=3 uid="uid://js1il6tyy8it"]
+[gd_scene load_steps=5 format=3 uid="uid://js1il6tyy8it"]
 
 [ext_resource type="PackedScene" uid="uid://cbs7jvwr28tsy" path="res://Map.tscn" id="1_gudly"]
 [ext_resource type="Script" path="res://Game.gd" id="1_l61x1"]
-[ext_resource type="PackedScene" uid="uid://dp2rty8t2fngy" path="res://Character.tscn" id="2_vbn45"]
 [ext_resource type="Theme" uid="uid://ddgo057dc411p" path="res://Theme.tres" id="3_rj6nc"]
-[ext_resource type="PackedScene" uid="uid://f7ux4ucjdtx3" path="res://Enemy.tscn" id="4_5pgag"]
-[ext_resource type="PackedScene" uid="uid://4mfbfwmnbq5e" path="res://Item.tscn" id="5_phxvh"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_j0txq"]
 
@@ -33,16 +30,19 @@ text = "          offset title screen of beginnings"
 layout_mode = 0
 offset_right = 480.0
 offset_bottom = 288.0
+theme_override_constants/separation = 0
 
 [node name="Spacer" type="Control" parent="Interface/VBox"]
 layout_mode = 2
 size_flags_vertical = 3
+size_flags_stretch_ratio = 10.0
 
-[node name="HBox" type="HBoxContainer" parent="Interface/VBox"]
+[node name="HBoxHUD" type="HBoxContainer" parent="Interface/VBox"]
 layout_mode = 2
 size_flags_vertical = 3
+size_flags_stretch_ratio = 8.0
 
-[node name="MessageScroll" type="ScrollContainer" parent="Interface/VBox/HBox"]
+[node name="MessageScroll" type="ScrollContainer" parent="Interface/VBox/HBoxHUD"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -52,51 +52,86 @@ theme_override_styles/panel = SubResource("StyleBoxEmpty_j0txq")
 horizontal_scroll_mode = 0
 vertical_scroll_mode = 2
 
-[node name="Messages" type="VBoxContainer" parent="Interface/VBox/HBox/MessageScroll"]
+[node name="Messages" type="VBoxContainer" parent="Interface/VBox/HBoxHUD/MessageScroll"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 0
 theme_override_constants/separation = 0
 
-[node name="HBox" type="HBoxContainer" parent="Interface/VBox/HBox"]
+[node name="HBox" type="HBoxContainer" parent="Interface/VBox/HBoxHUD"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="VBoxState" type="VBoxContainer" parent="Interface/VBox/HBox/HBox"]
+[node name="VBoxState" type="VBoxContainer" parent="Interface/VBox/HBoxHUD/HBox"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="name" type="Label" parent="Interface/VBox/HBox/HBox/VBoxState"]
+[node name="name" type="Label" parent="Interface/VBox/HBoxHUD/HBox/VBoxState"]
 layout_mode = 2
 
-[node name="hp" type="Label" parent="Interface/VBox/HBox/HBox/VBoxState"]
+[node name="hp" type="Label" parent="Interface/VBox/HBoxHUD/HBox/VBoxState"]
 layout_mode = 2
 
-[node name="attack" type="Label" parent="Interface/VBox/HBox/HBox/VBoxState"]
+[node name="attack" type="Label" parent="Interface/VBox/HBoxHUD/HBox/VBoxState"]
 layout_mode = 2
 
-[node name="VBoxNames" type="VBoxContainer" parent="Interface/VBox/HBox/HBox"]
+[node name="VBoxNames" type="VBoxContainer" parent="Interface/VBox/HBoxHUD/HBox"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Label" type="Label" parent="Interface/VBox/HBox/HBox/VBoxNames"]
+[node name="Label" type="Label" parent="Interface/VBox/HBoxHUD/HBox/VBoxNames"]
 layout_mode = 2
 text = "name"
 horizontal_alignment = 2
 
-[node name="Label2" type="Label" parent="Interface/VBox/HBox/HBox/VBoxNames"]
+[node name="Label2" type="Label" parent="Interface/VBox/HBoxHUD/HBox/VBoxNames"]
 layout_mode = 2
 text = "health"
 horizontal_alignment = 2
 
-[node name="Label3" type="Label" parent="Interface/VBox/HBox/HBox/VBoxNames"]
+[node name="Label3" type="Label" parent="Interface/VBox/HBoxHUD/HBox/VBoxNames"]
 layout_mode = 2
 text = "attack"
 horizontal_alignment = 2
 
+[node name="HBoxButtons" type="HBoxContainer" parent="Interface/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="NewGameButton" type="Button" parent="Interface/VBox/HBoxButtons"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "New Game"
+
+[node name="Control" type="Control" parent="Interface/VBox/HBoxButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 3.0
+
+[node name="InventoryButton" type="Button" parent="Interface/VBox/HBoxButtons"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Inventory"
+
+[node name="Control2" type="Control" parent="Interface/VBox/HBoxButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+
+[node name="OptionsButton" type="Button" parent="Interface/VBox/HBoxButtons"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "OPtions"
+
+[node name="HelpButton" type="Button" parent="Interface/VBox/HBoxButtons"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Help"
+
 [node name="Entities" type="Control" parent="."]
+unique_name_in_owner = true
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
@@ -106,28 +141,15 @@ offset_bottom = 40.0
 unique_name_in_owner = true
 anchors_preset = 0
 
-[node name="Item" parent="Entities/Items" instance=ExtResource("5_phxvh")]
-offset_left = 33.0
-offset_top = 15.0
-offset_right = 33.0
-offset_bottom = 15.0
-
 [node name="Enemies" type="Control" parent="Entities"]
 unique_name_in_owner = true
 anchors_preset = 0
 
-[node name="Enemy" parent="Entities/Enemies" instance=ExtResource("4_5pgag")]
-offset_left = 63.0
-offset_top = 15.0
-offset_right = 63.0
-offset_bottom = 15.0
+[node name="Popups" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
 
-[node name="Character" parent="Entities" instance=ExtResource("2_vbn45")]
-unique_name_in_owner = true
-offset_left = 15.0
-offset_top = 15.0
-offset_right = 15.0
-offset_bottom = 15.0
-
-[connection signal="attempt_action_at" from="Entities/Character" to="." method="_on_character_attempt_action_at"]
-[connection signal="attempt_move_to" from="Entities/Character" to="." method="_on_character_attempt_move_to"]
+[connection signal="pressed" from="Interface/VBox/HBoxButtons/NewGameButton" to="." method="_on_new_game_button_pressed"]
+[connection signal="pressed" from="Interface/VBox/HBoxButtons/InventoryButton" to="." method="_on_inventory_button_pressed"]
+[connection signal="pressed" from="Interface/VBox/HBoxButtons/OptionsButton" to="." method="_on_help_button_pressed"]
+[connection signal="pressed" from="Interface/VBox/HBoxButtons/HelpButton" to="." method="_on_help_button_pressed"]
