@@ -70,61 +70,33 @@ func cellular_automata_generation():
 					generations[current_generation][x].append( EMPTY_SPACE )
 		smoothing_steps -= 1
 	
-	#third step, flooding a cave and filling in the rest
-	var flood_squares = [ [Vector2i(SIZE.x/2, SIZE.y/2)] ]
-	append_neighbours_to_flood( flood_squares, generations[current_generation] )
+	#third step, flooding a cave
+	var flood_squares = [Vector2i(SIZE.x/2, SIZE.y/2)] 
+	append_empty_neighbours_to_flood( flood_squares[0], flood_squares, generations[current_generation] )
 	
 	#fourth step, checking the cave is big enough
 	var grid_size = SIZE.x * SIZE.y
-	var flood_size = 0
-	for each_flood_generation in flood_squares:
-		flood_size += each_flood_generation
-	if grid_size - flood_size < grid_size/3:
-		#not a big enough dungeon, try again
-		#cellular_automata_generation()
-		pass
-	
-	#fifth step, assemble final grid
-	generations.append( [] )
-	current_generation += 1
-	for x in SIZE.x:
-		generations[current_generation].append( [] )
-		for y in SIZE.y:
-			var found = false
-			for each_flood_generation in flood_squares:
-				if each_flood_generation.has( Vector2i(x,y) ):
-					generations[current_generation][x].append( EMPTY_SPACE )
-					found = true
-					break
-			
-			if not found:
-				generations[current_generation][x].append( SOLID_SQUARE )
+	if flood_squares.size() < grid_size/3:
+		#just try again lol
+		cellular_automata_generation()
+		return
 	
 	#final step, export to the TileMap
 	for x in SIZE.x:
 		for y in SIZE.y:
-			set_cell(0,  Vector2i(x,y), 0, generations[current_generation][x][y] )
+			if flood_squares.has( Vector2i(x,y) ):
+				set_cell(0, Vector2i(x,y), 0, EMPTY_SPACE )
+			else:
+				set_cell(0, Vector2i(x,y), 0, SOLID_SQUARE )
 
 
-func append_neighbours_to_flood(flood, map_grid):
-	print("new recursion")
-	var new_flood = []
-	
-	for each_flood_square in flood[-1]:
-		for x_range in range( each_flood_square.x-1, each_flood_square.x+2 ):
-			for y_range in range( each_flood_square.y-1, each_flood_square.y+2 ):
-				if x_range < 0 or x_range >= SIZE.x or y_range < 0 or y_range >= SIZE.y:
-					continue
-				var new_square = Vector2i(x_range, y_range)
-				for each_flood_generation in flood:
-					if each_flood_generation.has( new_square ):
-						continue
-					if not new_flood.has( new_square ) and map_grid[x_range][y_range] == EMPTY_SPACE:
-						new_flood.append(new_square)
-	
-	flood.append( new_flood )
-	if new_flood.size() > 0:
-		append_neighbours_to_flood( flood, map_grid )
-	
-
+func append_empty_neighbours_to_flood(grid_pos: Vector2i, flood, map_grid):
+	for x_range in range( grid_pos.x-1, grid_pos.x+2 ):
+		for y_range in range( grid_pos.y-1, grid_pos.y+2 ):
+			if x_range < 0 or x_range >= SIZE.x or y_range < 0 or y_range >= SIZE.y:
+				continue
+			var new_square = Vector2i(x_range, y_range)
+			if map_grid[x_range][y_range] == EMPTY_SPACE and not flood.has( new_square ):
+				flood.append(new_square)
+				append_empty_neighbours_to_flood( new_square, flood, map_grid )
 
