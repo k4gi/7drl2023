@@ -11,6 +11,12 @@ var enemy_id = "zombie"
 var enemy_stats = {}
 
 
+func set_enemy_id(id: String):
+	enemy_id = id
+	enemy_stats = Data.ENEMY_LIST[enemy_id].duplicate()
+	$Label.set_text( enemy_stats["char"] )
+
+
 func set_colour_normal():
 	$ColorRect.set_color(BACKGROUND_COLOUR)
 	$Label.set_modulate(FOREGROUND_COLOUR)

@@ -10,6 +10,8 @@ var pathfinding
 
 var Character = null
 
+var random = RandomNumberGenerator.new()
+
 
 func _ready():
 	pass
@@ -20,40 +22,74 @@ func start_new_game():
 	
 	$Map.cellular_automata_generation()
 	
-	var random = RandomNumberGenerator.new()
 	random.randomize()
 	
+	setup_pathfinding()
+	
+	#spawning entities goes in the middle here
+	setup_entities()
+	
+	#finalize world with numbers
+	setup_stats()
+
+
+func setup_pathfinding():
 	pathfinding = AStarGrid2D.new()
 	pathfinding.set_size( $Map.SIZE )
 	pathfinding.update()
 	for each_grid_pos in $Map.get_used_cells(0):
 		if $Map.is_wall_at_grid( each_grid_pos ):
 			pathfinding.set_point_solid( each_grid_pos, true )
-	
-	#spawning entities goes in the middle here
+
+
+func setup_entities():
 	var empty_map_squares = $Map.get_used_cells_by_id(0, 0, $Map.EMPTY_SPACE)
 	var random_square = random.randi() % empty_map_squares.size()
 	
+	var character_position = empty_map_squares[random_square]
+	spawn_character(character_position)
+	empty_map_squares.remove_at(random_square)
+	
+	#enemies should be at least . . . TEN squares away from the Character
+	remove_squares_close_to(empty_map_squares, character_position)
+	
+	#to start with we will spawn . . . FIVE enemies
+	for five_times in range(0,5):
+		random_square  = random.randi() % empty_map_squares.size()
+		spawn_enemy(empty_map_squares[random_square])
+		empty_map_squares.remove_at(random_square)
+
+
+func remove_squares_close_to(map_squares, grid_pos, distance:=10):
+	var squares_to_be_removed = []
+	for each_square in map_squares:
+		if abs( each_square.x - grid_pos.x ) < distance and \
+			abs( each_square.y - grid_pos.y ) < distance:
+				squares_to_be_removed.append( each_square )
+	for each_square in squares_to_be_removed:
+		map_squares.erase(each_square)
+
+
+func spawn_character(grid_pos):
 	var new_character = CHARACTER.instantiate()
-	new_character.set_position( $Map.map_to_local( empty_map_squares[random_square] ) )
+	new_character.set_position( $Map.map_to_local( grid_pos ) )
 	new_character.attempt_move_to.connect(_on_character_attempt_move_to)
 	new_character.attempt_action_at.connect(_on_character_attempt_action_at)
 	Character = new_character
 	%Entities.add_child(new_character)
-	
-	empty_map_squares.remove_at(random_square)
-	
-	random_square  = random.randi() % empty_map_squares.size()
+
+
+func spawn_enemy(grid_pos, id:="zombie"):
 	var new_enemy = ENEMY.instantiate()
-	new_enemy.set_position( $Map.map_to_local( empty_map_squares[random_square] ) )
-	%Enemies.add_child(new_enemy)
+	new_enemy.set_position( $Map.map_to_local( grid_pos ) )
+	new_enemy.set_enemy_id(id)
 	
-	#finalize world with numbers
+	%Enemies.add_child(new_enemy)
+
+
+func setup_stats():
 	State.character_stats = Data.CHARACTER_LIST["default"].duplicate()
 	refresh_state()
-	
-	for each_enemy in %Enemies.get_children():
-		each_enemy.enemy_stats = Data.ENEMY_LIST[each_enemy.enemy_id].duplicate()
 
 
 func reset_game():
@@ -70,6 +106,16 @@ func reset_game():
 	
 	State.character_stats = {}
 	State.character_inventory = {}
+
+
+func spawn_enemy_during_game():
+	var empty_map_squares = $Map.get_used_cells_by_id(0, 0, $Map.EMPTY_SPACE)
+	var character_position = $Map.local_to_map( Character.get_position() )
+	remove_squares_close_to(empty_map_squares, character_position)
+	
+	var random_square = random.randi() % empty_map_squares.size()
+	
+	spawn_enemy( empty_map_squares[random_square] )
 
 
 func _on_character_attempt_move_to(pos):
@@ -92,6 +138,7 @@ func _on_character_attempt_move_to(pos):
 					add_message("You have killed the %s!" % each_enemy.enemy_stats["name"])
 					%Enemies.remove_child(each_enemy)
 					each_enemy.queue_free()
+					spawn_enemy_during_game()
 				has_moved = true
 				break
 	
