@@ -5,8 +5,11 @@ const FOREGROUND_COLOUR = Color.WHITE
 const BACKGROUND_COLOUR = Color.BLACK
 
 
-var is_active = true
+var is_active = false
+
 var enemy_id = "zombie"
+
+var current_move_delay = 0
 
 var enemy_stats = {}
 

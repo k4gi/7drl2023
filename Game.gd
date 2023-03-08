@@ -12,6 +12,8 @@ var Character = null
 
 var random = RandomNumberGenerator.new()
 
+var current_level = 1
+
 
 func _ready():
 	pass
@@ -33,6 +35,16 @@ func start_new_game():
 	setup_stats()
 
 
+func start_new_level():
+	reset_entities()
+	
+	$Map.cellular_automata_generation()
+	
+	setup_pathfinding()
+	
+	setup_entities()
+
+
 func setup_pathfinding():
 	pathfinding = AStarGrid2D.new()
 	pathfinding.set_size( $Map.SIZE )
@@ -52,6 +64,13 @@ func setup_entities():
 	
 	#enemies should be at least . . . TEN squares away from the Character
 	remove_squares_close_to(empty_map_squares, character_position)
+	
+	#one staircase
+	#hmm. how to represent a staircase.
+	#like an item i suppose.
+	random_square = random.randi() % empty_map_squares.size()
+	spawn_item(empty_map_squares[random_square], "stair")
+	empty_map_squares.remove_at(random_square)
 	
 	#to start with we will spawn . . . FIVE enemies
 	for five_times in range(0,5):
@@ -87,12 +106,27 @@ func spawn_enemy(grid_pos, id:="zombie"):
 	%Enemies.add_child(new_enemy)
 
 
+func spawn_item(grid_pos, id):
+	var new_item = ITEM.instantiate()
+	new_item.set_position( $Map.map_to_local( grid_pos ) )
+	new_item.set_item_id(id)
+	
+	%Items.add_child(new_item)
+
+
 func setup_stats():
 	State.character_stats = Data.CHARACTER_LIST["default"].duplicate()
 	refresh_state()
 
 
 func reset_game():
+	reset_entities()
+	
+	State.character_stats = {}
+	State.character_inventory = {}
+
+
+func reset_entities():
 	for each_item in %Items.get_children():
 		%Items.remove_child(each_item)
 		each_item.queue_free()
@@ -103,9 +137,6 @@ func reset_game():
 		%Entities.remove_child(Character)
 		Character.queue_free()
 		Character = null
-	
-	State.character_stats = {}
-	State.character_inventory = {}
 
 
 func spawn_enemy_during_game():
@@ -163,25 +194,34 @@ func _on_character_attempt_move_to(pos):
 func enemy_movement():
 	#if i want enemies to move in more than one way i should give each of them their own movement function
 	for each_enemy in %Enemies.get_children():
+		var path_to_character = pathfinding.get_id_path( $Map.local_to_map( each_enemy.get_position() ), $Map.local_to_map( Character.get_position() ) )
+		if not each_enemy.get("is_active"):
+			#uhh how far away should they be to see you... TEN
+			if path_to_character.size() < each_enemy.enemy_stats["notice_range"]:
+				each_enemy.set("is_active", true)
 		if each_enemy.get("is_active"):
-			var path_to_character = pathfinding.get_id_path( $Map.local_to_map( each_enemy.get_position() ), $Map.local_to_map( Character.get_position() ) )
-			if path_to_character.size() > 2: #far enough away to move toward character
-				each_enemy.set_position( $Map.map_to_local( path_to_character[1] ) )
-				#moving is happening, so we can see if we need to change colour
-				each_enemy.set_colour_normal()
-				for each_item in %Items.get_children():
-					if each_item.get_position() == each_enemy.get_position():
-						each_enemy.set_colour_invert()
-						break
-			elif path_to_character.size() == 2: #adjacent to character, attacking time
+			if path_to_character.size() == 2: #adjacent to character, attacking time
 				add_message("%s strikes you for %d damage!" % [each_enemy.enemy_stats["name"], each_enemy.enemy_stats["attack"]])
 				State.character_stats["hp"] -= Data.ENEMY_LIST[each_enemy.enemy_id]["attack"]
 				if State.character_stats["hp"] <= 0:
 					add_message("You have been killed by %s :(" % each_enemy.enemy_stats["name"])
+					add_message("You made it to Level %d" % current_level)
 					%Entities.remove_child(Character)
 					Character.queue_free()
 					Character = null
 					return
+			else: #far enough away to move toward character
+				if each_enemy.current_move_delay > 0:
+					each_enemy.current_move_delay -= 1
+				else: #it's time to move
+					each_enemy.current_move_delay = each_enemy.enemy_stats["move_delay"]
+					each_enemy.set_position( $Map.map_to_local( path_to_character[1] ) )
+					#moving is happening, so we can see if we need to change colour
+					each_enemy.set_colour_normal()
+					for each_item in %Items.get_children():
+						if each_item.get_position() == each_enemy.get_position():
+							each_enemy.set_colour_invert()
+							break
 
 
 func add_message(message: String):
@@ -205,19 +245,35 @@ func _on_character_attempt_action_at(pos):
 	for each_item in %Items.get_children():
 		if each_item.get_position() == pos:
 			#how to deal with more than one item?
-			add_message("You pick up the %s" % Data.ITEM_LIST[each_item.item_id]["name"])
-			if not State.character_inventory.has(each_item.item_id):
-				State.character_inventory[each_item.item_id] = 1
+			if Data.ITEM_LIST[each_item.item_id]["interact"]:
+				#interact instead of pickup
+				interact_with( each_item )
 			else:
-				State.character_inventory[each_item.item_id] += 1
-			%Items.remove_child(each_item)
-			each_item.queue_free()
+				pick_up( each_item )
 	
 	#end turn
 	enemy_movement()
 	refresh_state()
 	if Character != null:
 		Character.is_active = true
+
+
+func interact_with( item: Object ):
+	match item.item_id:
+		"stair":
+			current_level += 1
+			add_message("You descend the staircase to Level %d . . ." % current_level)
+			start_new_level()
+
+
+func pick_up( item: Object ):
+	add_message("You pick up the %s" % Data.ITEM_LIST[item.item_id]["name"])
+	if not State.character_inventory.has(item.item_id):
+		State.character_inventory[item.item_id] = 1
+	else:
+		State.character_inventory[item.item_id] += 1
+	%Items.remove_child(item)
+	item.queue_free()
 
 
 func _on_new_game_button_pressed():
@@ -229,4 +285,8 @@ func _on_inventory_button_pressed():
 
 
 func _on_help_button_pressed():
+	pass # Replace with function body.
+
+
+func _on_options_button_pressed():
 	pass # Replace with function body.

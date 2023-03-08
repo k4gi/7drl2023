@@ -151,5 +151,5 @@ anchors_preset = 0
 
 [connection signal="pressed" from="Interface/VBox/HBoxButtons/NewGameButton" to="." method="_on_new_game_button_pressed"]
 [connection signal="pressed" from="Interface/VBox/HBoxButtons/InventoryButton" to="." method="_on_inventory_button_pressed"]
-[connection signal="pressed" from="Interface/VBox/HBoxButtons/OptionsButton" to="." method="_on_help_button_pressed"]
+[connection signal="pressed" from="Interface/VBox/HBoxButtons/OptionsButton" to="." method="_on_options_button_pressed"]
 [connection signal="pressed" from="Interface/VBox/HBoxButtons/HelpButton" to="." method="_on_help_button_pressed"]
