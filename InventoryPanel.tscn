@@ -1,0 +1,47 @@
+[gd_scene load_steps=3 format=3 uid="uid://xlbcy5ckjc75"]
+
+[ext_resource type="Script" path="res://InventoryPanel.gd" id="1_qlupe"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xk2al"]
+bg_color = Color(0, 0, 0, 1)
+
+[node name="InventoryPanel" type="PanelContainer"]
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_xk2al")
+script = ExtResource("1_qlupe")
+
+[node name="BorderText" type="Label" parent="."]
+layout_mode = 2
+size_flags_vertical = 1
+theme_override_constants/line_spacing = 0
+theme_override_font_sizes/font_size = 10
+text = "/----------\\
+|
+|
+|
+|
+|
+|"
+
+[node name="HBox" type="HBoxContainer" parent="BorderText"]
+layout_mode = 2
+offset_right = 144.0
+offset_bottom = 91.0
+theme_override_constants/separation = 0
+
+[node name="Spacer" type="Control" parent="BorderText/HBox"]
+custom_minimum_size = Vector2(12, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+
+[node name="VBoxEntries" type="VBoxContainer" parent="BorderText/HBox"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="Spacer" type="Control" parent="BorderText/HBox/VBoxEntries"]
+custom_minimum_size = Vector2(0, 11)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0

@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://bb0unb3k2bw1u"]
+
+[ext_resource type="StyleBox" uid="uid://j1nkiy25jeka" path="res://StyleBoxWhite.tres" id="1_aqc20"]
+
+[node name="InventoryEntry" type="Label"]
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_constants/line_spacing = 0
+theme_override_font_sizes/font_size = 10
+theme_override_styles/normal = ExtResource("1_aqc20")
+text = "empty_entry"

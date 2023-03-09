@@ -4,6 +4,7 @@ extends Node2D
 const CHARACTER = preload("res://Character.tscn")
 const ENEMY = preload("res://Enemy.tscn")
 const ITEM = preload("res://Item.tscn")
+const INVENTORY_PANEL = preload("res://InventoryPanel.tscn")
 
 
 var pathfinding
@@ -276,12 +277,22 @@ func pick_up( item: Object ):
 	item.queue_free()
 
 
+func open_inventory():
+	var new_inventory = INVENTORY_PANEL.instantiate()
+	new_inventory.add_item("bananas")
+	new_inventory.add_item("apricots")
+	new_inventory.add_item("absurdly long string.")
+	new_inventory.select_item(2)
+	new_inventory.set_border()
+	%Popups.add_child(new_inventory)
+
+
 func _on_new_game_button_pressed():
 	start_new_game()
 
 
 func _on_inventory_button_pressed():
-	pass # Replace with function body.
+	open_inventory()
 
 
 func _on_help_button_pressed():
