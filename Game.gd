@@ -5,6 +5,7 @@ const CHARACTER = preload("res://Character.tscn")
 const ENEMY = preload("res://Enemy.tscn")
 const ITEM = preload("res://Item.tscn")
 const INVENTORY_PANEL = preload("res://InventoryPanel.tscn")
+const FINAL_MAP = preload("res://FinalMap.tscn")
 
 
 var pathfinding
@@ -23,6 +24,8 @@ func _ready():
 func start_new_game():
 	reset_game()
 	
+	setup_stats()
+	
 	$Map.cellular_automata_generation()
 	
 	random.randomize()
@@ -31,19 +34,29 @@ func start_new_game():
 	
 	#spawning entities goes in the middle here
 	setup_entities()
-	
-	#finalize world with numbers
-	setup_stats()
 
 
 func start_new_level():
 	reset_entities()
 	
-	$Map.cellular_automata_generation()
-	
-	setup_pathfinding()
-	
-	setup_entities()
+	if current_level < 4:
+		$Map.cellular_automata_generation()
+		
+		setup_pathfinding()
+		
+		setup_entities()
+	else:
+		var final_map = FINAL_MAP.instantiate()
+		
+		for each_cell_coords in $Map.get_used_cells(0):
+			var atlas_coords = final_map.get_cell_atlas_coords(0, each_cell_coords)
+			$Map.set_cell(0, each_cell_coords, 0, atlas_coords)
+		
+		spawn_character( $Map.local_to_map( final_map.get_node("CharacterPos").get_position() ) )
+		spawn_item( $Map.local_to_map( final_map.get_node("TreasurePos").get_position() ), "ring" )
+		spawn_item( $Map.local_to_map( final_map.get_node("StairsPos").get_position() ), "final_stair" )
+		
+		final_map.queue_free()
 
 
 func setup_pathfinding():
@@ -71,32 +84,61 @@ func setup_entities():
 	spawn_item(empty_map_squares[random_square], "stair")
 	empty_map_squares.remove_at(random_square)
 	
-	var number_of_rats = randi() % ( empty_map_squares.size() / 40 ) + 5
-	for each_time in range(0,number_of_rats):
-		random_square  = random.randi() % empty_map_squares.size()
-		spawn_enemy(empty_map_squares[random_square], "rat")
-		empty_map_squares.remove_at(random_square)
+	#different enemy spawning on each of three levels...
+	print( empty_map_squares.size() )
+	match current_level:
+		1:
+			var number_of_rats = randi() % ( empty_map_squares.size() / 100 ) + 5
+			spawn_many_enemies(empty_map_squares, random, "rat", number_of_rats)
+			var number_of_zombies = randi() % ( empty_map_squares.size() / 100 ) + 6
+			spawn_many_enemies(empty_map_squares, random, "zombie", number_of_zombies)
+		2:
+			var number_of_rats = randi() % ( empty_map_squares.size() / 100 ) + 4
+			spawn_many_enemies(empty_map_squares, random, "rat", number_of_rats)
+			var number_of_zombies = randi() % ( empty_map_squares.size() / 100 ) + 5
+			spawn_many_enemies(empty_map_squares, random, "zombie", number_of_zombies)
+			var number_of_frogs = randi() % (empty_map_squares.size() / 100 ) + 4
+			spawn_many_enemies(empty_map_squares, random, "frog", number_of_frogs)
+		3:
+			var number_of_rats = randi() % ( empty_map_squares.size() / 100 ) + 6
+			spawn_many_enemies(empty_map_squares, random, "rat", number_of_rats)
+			var number_of_zombies = randi() % ( empty_map_squares.size() / 100 ) + 6
+			spawn_many_enemies(empty_map_squares, random, "zombie", number_of_zombies)
+			var number_of_frogs = randi() % (empty_map_squares.size() / 100 ) + 8
+			spawn_many_enemies(empty_map_squares, random, "frog", number_of_frogs)
 	
-	var number_of_zombies = randi() % ( empty_map_squares.size() / 50 ) + 6
-	for each_time in range(0,number_of_zombies):
-		random_square  = random.randi() % empty_map_squares.size()
-		spawn_enemy(empty_map_squares[random_square], "zombie")
-		empty_map_squares.remove_at(random_square)
-	#ten coins, let's say
-	for ten_times in range(0,10):
+	#ten coins * current level??
+	for ten_times in range(0,current_level*10):
 		random_square = random.randi() % empty_map_squares.size()
 		spawn_item(empty_map_squares[random_square], "money")
 		empty_map_squares.remove_at(random_square)
 	
-	#and a sword
-	random_square = random.randi() % empty_map_squares.size()
-	spawn_item(empty_map_squares[random_square], "sword")
-	empty_map_squares.remove_at(random_square)
-	
-	#and a knife
-	random_square = random.randi() % empty_map_squares.size()
-	spawn_item(empty_map_squares[random_square], "knife")
-	empty_map_squares.remove_at(random_square)
+	#different item spawning too
+	match current_level:
+		1:
+			#two knives
+			random_square = random.randi() % empty_map_squares.size()
+			spawn_item(empty_map_squares[random_square], "knife")
+			empty_map_squares.remove_at(random_square)
+			random_square = random.randi() % empty_map_squares.size()
+			spawn_item(empty_map_squares[random_square], "knife")
+			empty_map_squares.remove_at(random_square)
+		2:
+			#one knife, one sword
+			random_square = random.randi() % empty_map_squares.size()
+			spawn_item(empty_map_squares[random_square], "knife")
+			empty_map_squares.remove_at(random_square)
+			random_square = random.randi() % empty_map_squares.size()
+			spawn_item(empty_map_squares[random_square], "sword")
+			empty_map_squares.remove_at(random_square)
+		3:
+			#two swords
+			random_square = random.randi() % empty_map_squares.size()
+			spawn_item(empty_map_squares[random_square], "sword")
+			empty_map_squares.remove_at(random_square)
+			random_square = random.randi() % empty_map_squares.size()
+			spawn_item(empty_map_squares[random_square], "sword")
+			empty_map_squares.remove_at(random_square)
 
 
 func remove_squares_close_to(map_squares, grid_pos, distance:=10):
@@ -119,6 +161,13 @@ func spawn_character(grid_pos):
 	%Entities.add_child(new_character)
 
 
+func spawn_many_enemies(map_squares, random_generator, enemy_id, number_of_enemies):
+	for each_time in range(0,number_of_enemies):
+		var random_square  = random_generator.randi() % map_squares.size()
+		spawn_enemy(map_squares[random_square], enemy_id)
+		map_squares.remove_at(random_square)
+
+
 func spawn_enemy(grid_pos, id:="zombie"):
 	var new_enemy = ENEMY.instantiate()
 	new_enemy.set_position( $Map.map_to_local( grid_pos ) )
@@ -137,6 +186,7 @@ func spawn_item(grid_pos, id):
 
 func setup_stats():
 	State.character_stats = Data.CHARACTER_LIST["default"].duplicate()
+	current_level = 1
 	refresh_state()
 
 
@@ -208,7 +258,7 @@ func _on_character_attempt_move_to(pos):
 			#check if there's an item at this position
 			for each_item in %Items.get_children():
 				if each_item.get_position() == pos:
-					Character.set_colour_invert()
+#					Character.set_colour_invert()
 					add_message("You see %s here" % Data.ITEM_LIST[each_item.item_id]["name"])
 			has_moved = true
 	
@@ -245,11 +295,11 @@ func enemy_movement():
 						each_enemy.set_position( $Map.map_to_local( path_to_character[each_enemy.current_move_range] ) )
 						each_enemy.current_move_range = 0
 					#moving is happening, so we can see if we need to change colour
-					each_enemy.set_colour_normal()
-					for each_item in %Items.get_children():
-						if each_item.get_position() == each_enemy.get_position():
-							each_enemy.set_colour_invert()
-							break
+#					each_enemy.set_colour_normal()
+#					for each_item in %Items.get_children():
+#						if each_item.get_position() == each_enemy.get_position():
+#							each_enemy.set_colour_invert()
+#							break
 			
 			if path_to_character.size() == 2 or each_enemy.current_move_range > 0: #adjacent to character, attacking time
 				add_message("%s strikes you for %d damage!" % [each_enemy.enemy_stats["name"], each_enemy.enemy_stats["attack"]])
@@ -257,11 +307,15 @@ func enemy_movement():
 				if State.character_stats["hp"] <= 0:
 					add_message("You have been killed by %s :(" % each_enemy.enemy_stats["name"])
 					add_message("You made it to Level %d" % current_level)
-					%Entities.remove_child(Character)
-					Character.queue_free()
-					Character = null
+					add_message("You perish clutching %d worth in treasure" % get_inventory_value())
+					delete_character()
 					return
 
+
+func delete_character():
+	%Entities.remove_child(Character)
+	Character.queue_free()
+	Character = null
 
 func add_message(message: String):
 	var new_label = Label.new()
@@ -303,6 +357,20 @@ func interact_with( item: Object ):
 			current_level += 1
 			add_message("You descend the staircase to Level %d . . ." % current_level)
 			start_new_level()
+		"final_stair":
+			add_message("You have finished the game :D")
+			add_message("You return with %d worth in treasure" % get_inventory_value())
+			delete_character()
+			return
+
+
+func get_inventory_value() -> int:
+	var value = 0
+	
+	for each_key in State.character_inventory.keys():
+		value += State.character_inventory[each_key] * Data.ITEM_LIST[each_key]["value"]
+	
+	return value
 
 
 func pick_up( item: Object ):

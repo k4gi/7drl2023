@@ -11,15 +11,26 @@ script = ExtResource("1_l61x1")
 
 [node name="Map" parent="." instance=ExtResource("1_gudly")]
 
-[node name="Interface" type="Control" parent="."]
+[node name="Entities" type="Control" parent="."]
+unique_name_in_owner = true
 layout_mode = 3
 anchors_preset = 0
-theme = ExtResource("3_rj6nc")
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Items" type="Control" parent="Entities"]
+unique_name_in_owner = true
+anchors_preset = 0
+
+[node name="Enemies" type="Control" parent="Entities"]
+unique_name_in_owner = true
+anchors_preset = 0
+
+[node name="Interface" type="CanvasLayer" parent="."]
 metadata/_edit_use_anchors_ = true
 
 [node name="Label" type="Label" parent="Interface"]
 visible = false
-layout_mode = 0
 offset_left = 6.0
 offset_top = 6.0
 offset_right = 96.0
@@ -27,9 +38,9 @@ offset_bottom = 25.0
 text = "          offset title screen of beginnings"
 
 [node name="VBox" type="VBoxContainer" parent="Interface"]
-layout_mode = 0
 offset_right = 480.0
 offset_bottom = 288.0
+theme = ExtResource("3_rj6nc")
 theme_override_constants/separation = 0
 
 [node name="Spacer" type="Control" parent="Interface/VBox"]
@@ -130,22 +141,7 @@ layout_mode = 2
 size_flags_horizontal = 4
 text = "Help"
 
-[node name="Entities" type="Control" parent="."]
-unique_name_in_owner = true
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="Items" type="Control" parent="Entities"]
-unique_name_in_owner = true
-anchors_preset = 0
-
-[node name="Enemies" type="Control" parent="Entities"]
-unique_name_in_owner = true
-anchors_preset = 0
-
-[node name="Popups" type="Control" parent="."]
+[node name="Popups" type="Control" parent="Interface"]
 unique_name_in_owner = true
 process_mode = 2
 layout_mode = 3

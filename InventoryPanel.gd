@@ -56,9 +56,9 @@ func add_item(item_id: String):
 	
 	if Data.ITEM_LIST[item_id]["equip"] != null:
 		if State.character_equip[ Data.ITEM_LIST[item_id]["equip"] ] == item_id:
-			new_entry_text += "(equipped)"
+			new_entry_text += " (equipped)"
 		else:
-			new_entry_text += "(can equip)"
+			new_entry_text += " (can equip)"
 	
 	new_entry.set_text( new_entry_text )
 	new_entry.set("item_id", item_id)

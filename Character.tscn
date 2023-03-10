@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://dp2rty8t2fngy"]
+[gd_scene load_steps=3 format=3 uid="uid://dp2rty8t2fngy"]
 
 [ext_resource type="Script" path="res://Character.gd" id="1_blfnp"]
+[ext_resource type="Texture2D" uid="uid://clt233my0nuwv" path="res://icon-1024x1024.jpg" id="2_djvgb"]
 
 [node name="Character" type="Control"]
 layout_mode = 3
@@ -24,3 +25,11 @@ offset_bottom = 7.0
 theme_override_font_sizes/font_size = 5
 text = "@"
 clip_text = true
+
+[node name="PointLight2D" type="PointLight2D" parent="."]
+shadow_enabled = true
+texture = ExtResource("2_djvgb")
+texture_scale = 0.5
+
+[node name="CanvasModulate" type="CanvasModulate" parent="."]
+color = Color(0, 0, 0, 1)
