@@ -188,6 +188,7 @@ func spawn_item(grid_pos, id):
 
 func setup_stats():
 	State.character_stats = Data.CHARACTER_LIST["default"].duplicate()
+	State.character_equip = {"weapon": null, "armour": null}
 	current_level = 1
 	refresh_state()
 

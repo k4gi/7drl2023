@@ -14,10 +14,12 @@ const SOLID_SQUARE = Vector2i(7,15)
 const LIGHT_GRID = Vector2i(8,15)
 const HEAVY_GRID = Vector2i(9,15)
 const HOLLOW_SQUARE = Vector2i(11,15)
-const EMPTY_SPACE = Vector2i(0,0)
+const EMPTY_SQUARE = Vector2i(0,0)
+const FULL_STOP = Vector2i(12,0)
 
 #which of these tiles are walls?
 const WALLS = [SOLID_SQUARE]
+const EMPTY_SPACE = FULL_STOP
 
 
 func is_wall_at(pos: Vector2):
