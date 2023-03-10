@@ -17,7 +17,7 @@ const HOLLOW_SQUARE = Vector2i(11,15)
 const EMPTY_SPACE = Vector2i(0,0)
 
 #which of these tiles are walls?
-const WALLS = [VERTICAL_BAR, HYPHEN, FORWARD_SLASH, BACK_SLASH, SOLID_SQUARE]
+const WALLS = [SOLID_SQUARE]
 
 
 func is_wall_at(pos: Vector2):

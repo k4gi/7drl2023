@@ -71,12 +71,17 @@ func setup_entities():
 	spawn_item(empty_map_squares[random_square], "stair")
 	empty_map_squares.remove_at(random_square)
 	
-	#to start with we will spawn . . . FIVE enemies
-	for five_times in range(0,5):
+	var number_of_rats = randi() % ( empty_map_squares.size() / 40 ) + 5
+	for each_time in range(0,number_of_rats):
 		random_square  = random.randi() % empty_map_squares.size()
-		spawn_enemy(empty_map_squares[random_square])
+		spawn_enemy(empty_map_squares[random_square], "rat")
 		empty_map_squares.remove_at(random_square)
 	
+	var number_of_zombies = randi() % ( empty_map_squares.size() / 50 ) + 6
+	for each_time in range(0,number_of_zombies):
+		random_square  = random.randi() % empty_map_squares.size()
+		spawn_enemy(empty_map_squares[random_square], "zombie")
+		empty_map_squares.remove_at(random_square)
 	#ten coins, let's say
 	for ten_times in range(0,10):
 		random_square = random.randi() % empty_map_squares.size()
@@ -140,6 +145,10 @@ func reset_game():
 	
 	State.character_stats = {}
 	State.character_inventory = {}
+	
+	for each_child in %Messages.get_children():
+		%Messages.remove_child(each_child)
+		each_child.queue_free()
 
 
 func reset_entities():
@@ -162,7 +171,10 @@ func spawn_enemy_during_game():
 	
 	var random_square = random.randi() % empty_map_squares.size()
 	
-	spawn_enemy( empty_map_squares[random_square] )
+	if randi() % 10 < 5:
+		spawn_enemy( empty_map_squares[random_square], "rat" )
+	else:
+		spawn_enemy( empty_map_squares[random_square], "zombie" )
 
 
 func _on_character_attempt_move_to(pos):
@@ -211,12 +223,35 @@ func enemy_movement():
 	#if i want enemies to move in more than one way i should give each of them their own movement function
 	for each_enemy in %Enemies.get_children():
 		var path_to_character = pathfinding.get_id_path( $Map.local_to_map( each_enemy.get_position() ), $Map.local_to_map( Character.get_position() ) )
+		
+		#activating enemies within range
 		if not each_enemy.get("is_active"):
-			#uhh how far away should they be to see you... TEN
 			if path_to_character.size() < each_enemy.enemy_stats["notice_range"]:
 				each_enemy.set("is_active", true)
+		
+		#moving and attacking
 		if each_enemy.get("is_active"):
-			if path_to_character.size() == 2: #adjacent to character, attacking time
+			if path_to_character.size() > 2: #far enough away to move toward character
+				if each_enemy.current_move_delay > 0:
+					each_enemy.current_move_delay -= 1
+				else: #it's time to move
+					each_enemy.current_move_delay = each_enemy.enemy_stats["move_delay"]
+					each_enemy.current_move_range = each_enemy.enemy_stats["move_range"]
+					
+					if each_enemy.current_move_range > path_to_character.size() - 2:
+						each_enemy.set_position( $Map.map_to_local( path_to_character[-2] ) )
+						each_enemy.current_move_range -= path_to_character.size() - 2
+					else:
+						each_enemy.set_position( $Map.map_to_local( path_to_character[each_enemy.current_move_range] ) )
+						each_enemy.current_move_range = 0
+					#moving is happening, so we can see if we need to change colour
+					each_enemy.set_colour_normal()
+					for each_item in %Items.get_children():
+						if each_item.get_position() == each_enemy.get_position():
+							each_enemy.set_colour_invert()
+							break
+			
+			if path_to_character.size() == 2 or each_enemy.current_move_range > 0: #adjacent to character, attacking time
 				add_message("%s strikes you for %d damage!" % [each_enemy.enemy_stats["name"], each_enemy.enemy_stats["attack"]])
 				State.character_stats["hp"] -= Data.ENEMY_LIST[each_enemy.enemy_id]["attack"]
 				if State.character_stats["hp"] <= 0:
@@ -226,18 +261,6 @@ func enemy_movement():
 					Character.queue_free()
 					Character = null
 					return
-			else: #far enough away to move toward character
-				if each_enemy.current_move_delay > 0:
-					each_enemy.current_move_delay -= 1
-				else: #it's time to move
-					each_enemy.current_move_delay = each_enemy.enemy_stats["move_delay"]
-					each_enemy.set_position( $Map.map_to_local( path_to_character[1] ) )
-					#moving is happening, so we can see if we need to change colour
-					each_enemy.set_colour_normal()
-					for each_item in %Items.get_children():
-						if each_item.get_position() == each_enemy.get_position():
-							each_enemy.set_colour_invert()
-							break
 
 
 func add_message(message: String):

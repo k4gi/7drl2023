@@ -10,6 +10,7 @@ var is_active = false
 var enemy_id = "zombie"
 
 var current_move_delay = 0
+var current_move_range = 0
 
 var enemy_stats = {}
 
