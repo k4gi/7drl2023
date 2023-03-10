@@ -32,10 +32,8 @@ func _unhandled_input(event):
 		var selected_item_id = $BorderText/HBox/VBoxEntries.get_child(current_selection).get("item_id")
 		if Data.ITEM_LIST[selected_item_id]["equip"] != null:
 			if State.character_equip[ Data.ITEM_LIST[selected_item_id]["equip"] ] != selected_item_id:
-				#State.character_equip[ Data.ITEM_LIST[selected_item_id]["equip"] ] = selected_item_id
-				print("trying to equip")
 				equipment_updated = selected_item_id
-			
+		
 		close_inventory()
 
 

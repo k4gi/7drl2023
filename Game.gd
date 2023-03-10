@@ -293,11 +293,12 @@ func pick_up( item: Object ):
 
 
 func open_inventory():
-	var new_inventory = INVENTORY_PANEL.instantiate()
-	new_inventory.update_equipment.connect(_on_inventory_panel_update_equipment)
-	new_inventory.finalise()
-	%Popups.add_child(new_inventory)
-	get_tree().set_pause(true)
+	if State.character_inventory.size() > 0:
+		var new_inventory = INVENTORY_PANEL.instantiate()
+		new_inventory.update_equipment.connect(_on_inventory_panel_update_equipment)
+		new_inventory.finalise()
+		%Popups.add_child(new_inventory)
+		get_tree().set_pause(true)
 
 
 func _on_inventory_panel_update_equipment(new_item_id):
