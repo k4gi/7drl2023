@@ -425,9 +425,22 @@ func _on_character_open_inventory():
 	open_inventory()
 
 
-func _on_help_button_pressed():
-	pass # Replace with function body.
+func _on_1x_button_pressed():
+	var viewport_width = ProjectSettings.get("display/window/size/viewport_width")
+	var viewport_height = ProjectSettings.get("display/window/size/viewport_height")
+	
+	get_window().set_size( Vector2i( viewport_width, viewport_height ) )
 
 
-func _on_options_button_pressed():
-	pass # Replace with function body.
+func _on_2x_button_pressed():
+	var viewport_width = ProjectSettings.get("display/window/size/viewport_width")
+	var viewport_height = ProjectSettings.get("display/window/size/viewport_height")
+	
+	get_window().set_size( Vector2i( viewport_width*2, viewport_height*2 ) )
+
+
+func _on_3x_button_pressed():
+	var viewport_width = ProjectSettings.get("display/window/size/viewport_width")
+	var viewport_height = ProjectSettings.get("display/window/size/viewport_height")
+	
+	get_window().set_size( Vector2i( viewport_width*3, viewport_height*3 ) )

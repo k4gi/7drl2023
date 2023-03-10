@@ -14,6 +14,7 @@ var is_active = true
 
 
 func _unhandled_input(event):
+	get_window().set_input_as_handled()
 	if is_active:
 		if event.is_action_pressed("move_up"):
 			is_active = false

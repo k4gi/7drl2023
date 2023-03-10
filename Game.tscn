@@ -80,6 +80,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="name" type="Label" parent="Interface/VBox/HBoxHUD/HBox/VBoxState"]
+visible = false
 layout_mode = 2
 
 [node name="hp" type="Label" parent="Interface/VBox/HBoxHUD/HBox/VBoxState"]
@@ -93,6 +94,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="Label" type="Label" parent="Interface/VBox/HBoxHUD/HBox/VBoxNames"]
+visible = false
 layout_mode = 2
 text = "name"
 horizontal_alignment = 2
@@ -122,6 +124,7 @@ size_flags_horizontal = 3
 size_flags_stretch_ratio = 3.0
 
 [node name="InventoryButton" type="Button" parent="Interface/VBox/HBoxButtons"]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 4
 text = "Inventory"
@@ -131,15 +134,24 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 2.0
 
-[node name="OptionsButton" type="Button" parent="Interface/VBox/HBoxButtons"]
+[node name="Label" type="Label" parent="Interface/VBox/HBoxButtons"]
 layout_mode = 2
-size_flags_horizontal = 4
-text = "OPtions"
+text = "window size:"
 
-[node name="HelpButton" type="Button" parent="Interface/VBox/HBoxButtons"]
+[node name="1xButton" type="Button" parent="Interface/VBox/HBoxButtons"]
 layout_mode = 2
 size_flags_horizontal = 4
-text = "Help"
+text = " 1x "
+
+[node name="2xButton" type="Button" parent="Interface/VBox/HBoxButtons"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = " 2x "
+
+[node name="3xButton" type="Button" parent="Interface/VBox/HBoxButtons"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = " 3x "
 
 [node name="Popups" type="Control" parent="Interface"]
 unique_name_in_owner = true
@@ -149,5 +161,6 @@ anchors_preset = 0
 
 [connection signal="pressed" from="Interface/VBox/HBoxButtons/NewGameButton" to="." method="_on_new_game_button_pressed"]
 [connection signal="pressed" from="Interface/VBox/HBoxButtons/InventoryButton" to="." method="_on_inventory_button_pressed"]
-[connection signal="pressed" from="Interface/VBox/HBoxButtons/OptionsButton" to="." method="_on_options_button_pressed"]
-[connection signal="pressed" from="Interface/VBox/HBoxButtons/HelpButton" to="." method="_on_help_button_pressed"]
+[connection signal="pressed" from="Interface/VBox/HBoxButtons/1xButton" to="." method="_on_1x_button_pressed"]
+[connection signal="pressed" from="Interface/VBox/HBoxButtons/2xButton" to="." method="_on_2x_button_pressed"]
+[connection signal="pressed" from="Interface/VBox/HBoxButtons/3xButton" to="." method="_on_3x_button_pressed"]

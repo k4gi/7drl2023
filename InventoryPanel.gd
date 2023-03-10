@@ -18,6 +18,7 @@ var equipment_updated = null
 
 
 func _unhandled_input(event):
+	get_window().set_input_as_handled()
 	if event.is_action_pressed("move_up"):
 		current_selection -= 1
 		if current_selection < 1:
@@ -33,7 +34,8 @@ func _unhandled_input(event):
 		if Data.ITEM_LIST[selected_item_id]["equip"] != null:
 			if State.character_equip[ Data.ITEM_LIST[selected_item_id]["equip"] ] != selected_item_id:
 				equipment_updated = selected_item_id
-		
+		close_inventory()
+	elif event.is_action_pressed("move_inventory"):
 		close_inventory()
 
 
