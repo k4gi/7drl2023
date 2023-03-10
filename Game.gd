@@ -173,6 +173,8 @@ func spawn_enemy(grid_pos, id:="zombie"):
 	new_enemy.set_position( $Map.map_to_local( grid_pos ) )
 	new_enemy.set_enemy_id(id)
 	
+	pathfinding.set_point_solid( grid_pos, true )
+	
 	%Enemies.add_child(new_enemy)
 
 
@@ -231,7 +233,7 @@ func _on_character_attempt_move_to(pos):
 	var has_moved = false
 	
 	#character might not be standing on anything
-	Character.set_colour_normal()
+	#Character.set_colour_normal()
 	
 	#any recent messages are old now
 	for each_message in %Messages.get_children():
@@ -272,11 +274,12 @@ func _on_character_attempt_move_to(pos):
 func enemy_movement():
 	#if i want enemies to move in more than one way i should give each of them their own movement function
 	for each_enemy in %Enemies.get_children():
+		pathfinding.set_point_solid( $Map.local_to_map( each_enemy.get_position() ), false )
 		var path_to_character = pathfinding.get_id_path( $Map.local_to_map( each_enemy.get_position() ), $Map.local_to_map( Character.get_position() ) )
 		
 		#activating enemies within range
 		if not each_enemy.get("is_active"):
-			if path_to_character.size() < each_enemy.enemy_stats["notice_range"]:
+			if path_to_character.size() >= 2 and path_to_character.size() < each_enemy.enemy_stats["notice_range"]:
 				each_enemy.set("is_active", true)
 		
 		#moving and attacking
@@ -287,6 +290,7 @@ func enemy_movement():
 				else: #it's time to move
 					each_enemy.current_move_delay = each_enemy.enemy_stats["move_delay"]
 					each_enemy.current_move_range = each_enemy.enemy_stats["move_range"]
+					
 					
 					if each_enemy.current_move_range > path_to_character.size() - 2:
 						each_enemy.set_position( $Map.map_to_local( path_to_character[-2] ) )
@@ -310,6 +314,7 @@ func enemy_movement():
 					add_message("You perish clutching %d worth in treasure" % get_inventory_value())
 					delete_character()
 					return
+		pathfinding.set_point_solid( $Map.local_to_map( each_enemy.get_position() ), true )
 
 
 func delete_character():
