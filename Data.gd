@@ -2,9 +2,10 @@ extends Node
 
 
 const ITEM_LIST = {
-	"money": { "name": "money", "char": "$", "value": 1, "equip": false, "interact": false },
+	"money": { "name": "money", "char": "$", "interact": false, "value": 1, "equip": null,  },
 	"stair": { "name": "staircase", "char": ">", "interact": true },
-	"sword": { "name": "sword", "char": "T", "value": 2, "equip": true, "interact": false }
+	"sword": { "name": "sword", "char": "T", "interact": false, "value": 2, "equip": "weapon", "effect": {"attack": 2} },
+	"knife": { "name": "knife", "char": "I", "interact": false, "value": 1, "equip": "weapon", "effect": {"attack": 1} },
 }
 
 

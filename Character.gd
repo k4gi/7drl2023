@@ -3,6 +3,7 @@ extends Control
 
 signal attempt_move_to(pos: Vector2)
 signal attempt_action_at(pos: Vector2)
+signal open_inventory()
 
 
 const FOREGROUND_COLOUR = Color.WHITE
@@ -44,6 +45,9 @@ func _unhandled_input(event):
 		elif event.is_action_pressed("move_action"):
 			is_active = false
 			emit_signal( "attempt_action_at", get_position() )
+		
+		elif event.is_action_pressed("move_inventory"):
+			emit_signal( "open_inventory" )
 
 
 func move_to(pos: Vector2):

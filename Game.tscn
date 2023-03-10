@@ -147,6 +147,7 @@ anchors_preset = 0
 
 [node name="Popups" type="Control" parent="."]
 unique_name_in_owner = true
+process_mode = 2
 layout_mode = 3
 anchors_preset = 0
 

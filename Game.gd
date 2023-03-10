@@ -67,8 +67,6 @@ func setup_entities():
 	remove_squares_close_to(empty_map_squares, character_position)
 	
 	#one staircase
-	#hmm. how to represent a staircase.
-	#like an item i suppose.
 	random_square = random.randi() % empty_map_squares.size()
 	spawn_item(empty_map_squares[random_square], "stair")
 	empty_map_squares.remove_at(random_square)
@@ -78,6 +76,22 @@ func setup_entities():
 		random_square  = random.randi() % empty_map_squares.size()
 		spawn_enemy(empty_map_squares[random_square])
 		empty_map_squares.remove_at(random_square)
+	
+	#ten coins, let's say
+	for ten_times in range(0,10):
+		random_square = random.randi() % empty_map_squares.size()
+		spawn_item(empty_map_squares[random_square], "money")
+		empty_map_squares.remove_at(random_square)
+	
+	#and a sword
+	random_square = random.randi() % empty_map_squares.size()
+	spawn_item(empty_map_squares[random_square], "sword")
+	empty_map_squares.remove_at(random_square)
+	
+	#and a knife
+	random_square = random.randi() % empty_map_squares.size()
+	spawn_item(empty_map_squares[random_square], "knife")
+	empty_map_squares.remove_at(random_square)
 
 
 func remove_squares_close_to(map_squares, grid_pos, distance:=10):
@@ -95,6 +109,7 @@ func spawn_character(grid_pos):
 	new_character.set_position( $Map.map_to_local( grid_pos ) )
 	new_character.attempt_move_to.connect(_on_character_attempt_move_to)
 	new_character.attempt_action_at.connect(_on_character_attempt_action_at)
+	new_character.open_inventory.connect(_on_character_open_inventory)
 	Character = new_character
 	%Entities.add_child(new_character)
 
@@ -279,12 +294,25 @@ func pick_up( item: Object ):
 
 func open_inventory():
 	var new_inventory = INVENTORY_PANEL.instantiate()
-	new_inventory.add_item("bananas")
-	new_inventory.add_item("apricots")
-	new_inventory.add_item("absurdly long string.")
-	new_inventory.select_item(2)
-	new_inventory.set_border()
+	new_inventory.update_equipment.connect(_on_inventory_panel_update_equipment)
+	new_inventory.finalise()
 	%Popups.add_child(new_inventory)
+	get_tree().set_pause(true)
+
+
+func _on_inventory_panel_update_equipment(new_item_id):
+	var slot_change = Data.ITEM_LIST[new_item_id]["equip"]
+	
+	if State.character_equip[slot_change] != null:
+		for each_stat in Data.ITEM_LIST[ State.character_equip[slot_change] ]["effect"].keys():
+			State.character_stats[each_stat] -= Data.ITEM_LIST[ State.character_equip[slot_change] ]["effect"][each_stat]
+	
+	State.character_equip[slot_change] = new_item_id
+	for each_stat in Data.ITEM_LIST[ new_item_id ]["effect"].keys():
+		State.character_stats[each_stat] += Data.ITEM_LIST[ new_item_id ]["effect"][each_stat]
+	
+	add_message("You start using your %s" % Data.ITEM_LIST[new_item_id]["name"])
+	refresh_state()
 
 
 func _on_new_game_button_pressed():
@@ -292,6 +320,10 @@ func _on_new_game_button_pressed():
 
 
 func _on_inventory_button_pressed():
+	open_inventory()
+
+
+func _on_character_open_inventory():
 	open_inventory()
 
 
